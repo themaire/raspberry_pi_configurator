@@ -17,7 +17,7 @@ After the good execution of the playbook, you will be able to connect via ssh wi
 
 <p>Vault's file password in stored 'group_vars/new' folder : foobar. So it takes effect only for the 'new' node group.<br/><br/>
 Vault usage :<br>
-```bash
+```console
 ansible-vault rekey ./group_vars/new/vault.yml<br>
 ansible-vault edit ./group_vars/new/vault.yml
 ```
@@ -30,7 +30,7 @@ ansible-vault edit ./group_vars/new/vault.yml
 <p>3 : Enjoy.</p>
 
 
-Supports:
+### Supports: #
 - Update and Upgrade each node.
 - Install specified packages (and Log2Ram).
 - Create admin group and user listed in users_admin variable list.
@@ -47,7 +47,7 @@ Supports:
 - ##Disallow SSH password authentication, if SSH key is provided.
 - ##Allows SSH password authentication, within ip range, if specified.
 
-By default:
+### By default: #
 - Updates and upgrades each node.
 - Installs log2ram, with 40mb RAM size for log folder.
 - Sets gpu_mem to 16mb.
