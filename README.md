@@ -2,29 +2,34 @@
 
 # STEPS for good results #
 
-## Create a ssh key #
+## 1 -- Flashing SD card with Raspberry Pi Imager #
 
-<p>Where the computer you use Ansible, create a ssh key for your futur Raspberry's user (nico for me).<br/>
+<p>Before flashing, please set a custom pi's password, configure wifi (if needed) and activate ssh.<br/>
+<br/>
+Easy!
+
+## 2 -- Create a ssh key #
+
+<p>On the computer you will use Ansible, create a ssh key for your futur Raspberry's user (nico for me).<br/>
 To generate it : ssh-keygen -f ~/.ssh/nico.key<br/>
 <br/>
-Dont forget to replace the file ./role/raspberry_pi/files/foobar.key.pub with YOUR_OWN_USERNAME.key.pub
-by "your futur username".key.pub like nico.key.pub.<br/>
+Dont forget to replace the file ./role/raspberry_pi/files/nico.key.pub by <b>"your futur username".key.pub</b> like nico.key.pub.<br/>
 
 After the good execution of the playbook, you will be able to connect via ssh without password.
 </p>
 
-## Set passwords in the vault file #
+## 3 -- Set passwords in the vault file #
 
 <p>Vault's file password in stored 'group_vars/new' folder : foobar. So it takes effect only for the 'new' node group.<br/><br/>
 Vault usage :<br>
   
 ```{r, engine='bash', count_lines}
-foo@bar:~$ ansible-vault rekey ./group_vars/new/vault.yml<br>
+foo@bar:~$ ansible-vault rekey ./group_vars/new/vault.yml
 foo@bar:~$ ansible-vault edit ./group_vars/new/vault.yml
 ```
 </p>
 
-## Run the playbook #
+## 4 -- Run the playbook #
 
 <p>1 : Connect to your fresh new Raspberry Pi OS via ssh and disconnect imediatly.</p>
 <p>2 : See or run the file demo_role_raspberrypi.sh</p>
