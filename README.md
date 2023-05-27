@@ -1,20 +1,39 @@
 # raspberry pi ansible role
 
-Notice:
-Vault's file password in group_vars/new folder : foobar ,
-where you need to edit to adapt new users names and passwords.
-ansible-vault rekey ./group_vars/new/vault.yml
-ansible-vault edit ./group_vars/new/vault.yml
+# STEPS for good results #
 
-Dont forget to replace the file ./role/raspberry_pi/files/foobar.key.pub
-by "your futur username".key.pub like boby.key.pub
-To generate it : ssh-keygen -f ~/.ssh/boby.key
+## Create a ssh key #
+
+<p>Where the computer you use Ansible, create a ssh key for your futur Raspberry's user (nico for me).<br/>
+To generate it : ssh-keygen -f ~/.ssh/nico.key<br/>
+<br/>
+Dont forget to replace the file ./role/raspberry_pi/files/foobar.key.pub with YOUR_OWN_USERNAME.key.pub
+by "your futur username".key.pub like nico.key.pub.<br/>
+
+After the good execution of the playbook, you will be able to connect via ssh without password.
+</p>
+
+## Set passwords in the vault file #
+
+<p>Vault's file password in stored 'group_vars/new' folder : foobar. So it takes effect only for the 'new' node group.<br/><br/>
+Vault usage :<br>
+```bash
+ansible-vault rekey ./group_vars/new/vault.yml<br>
+ansible-vault edit ./group_vars/new/vault.yml
+```
+</p>
+
+## Run the playbook #
+
+<p>1 : Connect to your fresh new Raspberry Pi OS via ssh and disconnect imediatly.</p>
+<p>2 : See or run the file demo_role_raspberrypi.sh</p>
+<p>3 : Enjoy.</p>
+
 
 Supports:
 - Update and Upgrade each node.
 - Install specified packages (and Log2Ram).
 - Create admin group and user listed in users_admin variable list.
-- Remove 'pi' user.
 - Change hostnames specified by prefix and index from inventory file.
 - Change GPU memory split.
 - Change timezone.
@@ -23,10 +42,10 @@ Supports:
 - Disable HDMI to preserve power.
 - Disable IPv6 of specified interfaces.
 
-- Change SSH Port.
-- Disallow SSH root login and empty passwords.
-- Disallow SSH password authentication, if SSH key is provided.
-- Allows SSH password authentication, within ip range, if specified.
+- ##Change SSH Port.
+- ##Disallow SSH root login and empty passwords.
+- ##Disallow SSH password authentication, if SSH key is provided.
+- ##Allows SSH password authentication, within ip range, if specified.
 
 By default:
 - Updates and upgrades each node.
@@ -34,7 +53,6 @@ By default:
 - Sets gpu_mem to 16mb.
 - Disables HDMI.
 - Disables IPv6 on wlan0 and eth0
-- Installs unattended upgrades
 
 ## Role Variables
 
@@ -107,4 +125,3 @@ Inspired from :
 https://galaxy.ansible.com/zjael/raspberry_pi
 ( https://github.com/zjael/raspberry_pi )
 
---happy ester!
