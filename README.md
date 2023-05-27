@@ -17,7 +17,7 @@ After the good execution of the playbook, you will be able to connect via ssh wi
 
 <p>Vault's file password in stored 'group_vars/new' folder : foobar. So it takes effect only for the 'new' node group.<br/><br/>
 Vault usage :<br>
-```bash session
+```shell
 foo@bar:~$ ansible-vault rekey ./group_vars/new/vault.yml<br>
 foo@bar:~$ ansible-vault edit ./group_vars/new/vault.yml
 ```
