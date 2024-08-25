@@ -10,10 +10,10 @@ Easy!
 
 ## 2 -- Create a ssh key #
 
-<p>On the computer you will use Ansible, create a ssh key for your futur Raspberry's user (nico for me).<br/>
+<p>On the computer you will use Ansible, create a ssh key for your futur Raspberry's user (nico for me, change it as you like).<br/>
 To generate it : ssh-keygen -f ~/.ssh/nico.key<br/>
 <br/>
-Dont forget to replace the file ./role/raspberry_pi/files/nico.key.pub by <b>"your futur username".key.pub</b> like nico.key.pub.<br/>
+!!! >>> Dont forget to replace the file ./role/raspberry_pi/files/nico.key.pub by <b>"your futur username".key.pub</b> like nico.key.pub.<br/>
 
 After the good execution of the playbook, you will be able to connect via ssh without password.
 </p>
@@ -24,15 +24,23 @@ After the good execution of the playbook, you will be able to connect via ssh wi
 Vault usage :<br>
   
 ```{r, engine='bash', count_lines}
-foo@bar:~$ ansible-vault rekey ./group_vars/new/vault.yml
-foo@bar:~$ ansible-vault edit ./group_vars/new/vault.yml
+ansible-vault rekey ./group_vars/new/vault.yml
+ansible-vault edit ./group_vars/new/vault.yml
 ```
 </p>
+<p>
+I recommand you to declare first one admin user and no normal users.
+</p>
 
-## 4 -- Run the playbook #
+## 4 -- Adapt the iventory file #
 
-<p>1 : Connect to your fresh new Raspberry Pi OS via ssh and disconnect imediatly.</p>
-<p>2 : See or run the file demo_role_raspberrypi.sh</p>
+<p>Edit the list_piansible.yml inventory file. A couple of boards are presents in the exemple.
+</p>
+
+## 5 -- Run the playbook #
+
+<p>1 : Connect to your fresh new Raspberry Pi OS via ssh and disconnect it imediatly.</p>
+<p>2 : See (best option) or run the file demo_role_raspberrypi.sh</p>
 <p>3 : Enjoy.</p>
 
 
