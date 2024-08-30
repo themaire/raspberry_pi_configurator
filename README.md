@@ -13,7 +13,7 @@ Easy!
 <p>On the computer you will use Ansible, create a ssh key for your futur Raspberry's user (nico for me, change it as you like).<br/>
 To generate it : ssh-keygen -f ~/.ssh/nico.key<br/>
 <br/>
-!!! >>> Dont forget to replace the file ./role/raspberry_pi/files/nico.key.pub by <b>"your futur username".key.pub</b> like nico.key.pub.<br/>
+!!! >>> Dont forget to replace the file ./roles/raspberry_pi/files/nico.key.pub by <b>"your futur username".key.pub</b> like nico.key.pub.<br/>
 
 After the good execution of the playbook, you will be able to connect via ssh without password.
 </p>
