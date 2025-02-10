@@ -1,0 +1,132 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    name: zsh
+    state: present
+    update_cache: true
+
+- name: Set Zsh as default shell for users
+  ansible.builtin.user:
+    name: "{{ zsh_user.name }}"
+    shell: /usr/bin/zsh
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Download Oh My Zsh install script for each user
+  ansible.builtin.get_url:
+    url: "{{ raspberry_pi_oh_my_zsh_url }}"
+    dest: "/home/{{ zsh_user.name }}/install-oh-my-zsh.sh"
+    mode: '0755'
+  become: true
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Install Oh My Zsh for each user
+  ansible.builtin.command:
+    cmd: "sh /home/{{ zsh_user.name }}/install-oh-my-zsh.sh"
+    creates: "/home/{{ zsh_user.name }}/.oh-my-zsh"
+  become: true
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Check if fzf repository is already cloned for each user
+  ansible.builtin.stat:
+    path: "/home/{{ zsh_user.name }}/.fzf/.git"
+  register: fzf_repo_stat
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Clone fzf repository for each user
+  ansible.builtin.git:
+    repo: "{{ raspberry_pi_fzf_repo_url }}"
+    dest: "/home/{{ zsh_user.name }}/.fzf"
+    depth: 1
+    update: false
+  become: true
+  when: not fzf_repo_stat.results[zsh_user.ansible_loop.index0].stat.exists
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Run fzf install script for each user
+  ansible.builtin.command:
+    cmd: "/home/{{ zsh_user.name }}/.fzf/install --all"
+    chdir: "/home/{{ zsh_user.name }}/.fzf"
+    creates: "/home/{{ zsh_user.name }}/.fzf/bin/fzf"
+  become: true
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Check if zsh-syntax-highlighting plugin is already cloned for each user
+  ansible.builtin.stat:
+    path: "{{ raspberry_pi_zsh_custom_dir }}/zsh-syntax-highlighting/.git"
+  register: zsh_syntax_highlighting_stat
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Clone or update zsh-syntax-highlighting plugin for each user
+  ansible.builtin.git:
+    repo: "{{ raspberry_pi_zsh_syntax_highlighting_url }}"
+    dest: "{{ raspberry_pi_zsh_custom_dir }}/zsh-syntax-highlighting"
+    update: true
+  become: true
+  when: not zsh_syntax_highlighting_stat.results[zsh_user.ansible_loop.index0].stat.exists
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Check if zsh-autosuggestions plugin is already cloned for each user
+  ansible.builtin.stat:
+    path: "{{ raspberry_pi_zsh_custom_dir }}/zsh-autosuggestions/.git"
+  register: zsh_autosuggestions_stat
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Clone zsh-autosuggestions plugin for each user
+  ansible.builtin.git:
+    repo: "{{ raspberry_pi_zsh_autosuggestions_url }}"
+    dest: "{{ raspberry_pi_zsh_custom_dir }}/zsh-autosuggestions"
+    update: false
+  become: true
+  when: not zsh_autosuggestions_stat.results[zsh_user.ansible_loop.index0].stat.exists
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Configure .zshrc with plugins and settings for each user
+  ansible.builtin.lineinfile:
+    path: "/home/{{ zsh_user.name }}/.zshrc"
+    state: present
+    create: true
+    line: "{{ zshrc_line }}"
+  become: true
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+  vars:
+    zshrc_lines:
+      - 'export ZSH="/home/{{ zsh_user.name }}/.oh-my-zsh"'
+      - 'ZSH_THEME="robbyrussell"'
+      - 'plugins=(git zsh-syntax-highlighting zsh-autosuggestions)'
+      - 'source $ZSH/oh-my-zsh.sh'
+      - 'source {{ raspberry_pi_zsh_custom_dir }}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
+      - 'source {{ raspberry_pi_zsh_custom_dir }}/zsh-autosuggestions/zsh-autosuggestions.zsh'
+      - '[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh'
+      - 'bindkey -e'
+
+- name: Change ownership and permissions of .zshrc for each user
+  ansible.builtin.file:
+    path: "/home/{{ zsh_user.name }}/.zshrc"
+    owner: "{{ zsh_user.name }}"
+    group: "{{ zsh_user.name }}"
+    mode: '0644'
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user

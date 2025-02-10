@@ -1,33 +1,39 @@
-- name: create group admin
-  group:
+---
+- name: "Create Group Admin"
+  ansible.builtin.group:
     name: "admin"
     state: present
-
-- name: create admin user accounts
-  user:
-    name: "{{ item.name }}"
-    password: "{{ item.password | password_hash('sha512')}}"
-    groups: "admin"
-  with_items:
-  - "{{ users_admin }}"
   no_log: true
 
-- name: add authorized keys
-  authorized_key:
-    user: "{{ item.name }}"
-    key: "{{ lookup('file', 'files/'+ item.name + '.key.pub') }}"
-  with_items: 
-  - "{{ users_admin }}"
-  - "{{ users_no_admin }}"
+- name: "Create Admin User Accounts"
+  ansible.builtin.user:
+    name: "{{ admin_user.name }}"
+    password: "{{ admin_user.password | password_hash('sha512') }}"
+    groups: "admin"
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: admin_user
+  no_log: true
 
-- name: "Allow admin users to sudo without a password"
-  lineinfile:
+- name: "Add Authorized Keys"
+  ansible.builtin.authorized_key:
+    user: "{{ admin_user.name }}"
+    key: "{{ lookup('file', 'files/' + admin_user.name + '.key.pub') }}"
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: admin_user
+#    - "{{ users_no_admin }}"
+  no_log: true
+
+- name: "Allow Admin Users to Sudo Without a Password"
+  ansible.builtin.lineinfile:
     dest: "/etc/sudoers"
     state: "present"
     regexp: "^%sudo"
     line: "%admin ALL=(ALL) NOPASSWD: ALL"
+  no_log: true
 
-- name: remove pi user
-  user:
-    name: "pi"
-    state: absent
+## Mettre plus tard dans un fichier de gestionnaire (handlers)
+# - name: "Disable Pi User"
+#   ansible.builtin.command:
+#     cmd: usermod -L pi

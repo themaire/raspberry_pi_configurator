@@ -1,3 +1,4 @@
+---
 # - name: Check if log2ram is already installed
 #   stat:
 #     path: /etc/systemd/system/log2ram.service
@@ -8,16 +9,16 @@
 #   when: log2ram_installed.stat.exists
 
 - name: Download log2ram services from master branch
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/azlux/log2ram/archive/master.tar.gz"
     dest: "/tmp/log2ram.tar.gz"
-    mode: 0755
+    mode: '0755'
 
 - name: Extract archive
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/log2ram.tar.gz
     dest: /tmp/
-    remote_src: yes
+    remote_src: true
 
 - name: Create /usr/local/bin/ directory if it does not exist
   ansible.builtin.file:
@@ -25,83 +26,83 @@
     state: directory
     mode: '0755'
 
-- name: log2ram.service
-  copy:
+- name: Log2ram.service
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram.service
     dest: /etc/systemd/system/log2ram.service
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: log2ram-daily.service
-  copy:
+- name: Log2ram-daily.service
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram-daily.service
     dest: /etc/systemd/system/log2ram-daily.service
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: log2ram-daily.timer
-  copy:
+- name: Log2ram-daily.timer
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram-daily.timer
     dest: /etc/systemd/system/log2ram-daily.timer
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: log2ram.logrotate
-  copy:
+- name: Log2ram.logrotate
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram.logrotate
     dest: /etc/logrotate.d/log2ram
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: log2ram binary
-  copy:
+- name: Log2ram binary
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram
     dest: /usr/local/bin/log2ram
-    mode: 0755
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: log2ram uninstall.sh
-  copy:
+- name: Log2ram uninstall.sh
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/uninstall.sh
     dest: /usr/local/bin/uninstall.sh_log2ram.sh
-    mode: 0755
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: log2ram config
-  copy:
+- name: Log2ram config
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram.conf
     dest: /etc/log2ram.conf
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
-- name: Change RAM size of log folder to {{ log2ram_size }}MB
-  lineinfile:
+- name: Change RAM size of log folder to MB {{ log2ram_size }}
+  ansible.builtin.lineinfile:
     path: /etc/log2ram.conf
     regexp: '^SIZE='
-    line: 'SIZE={{ log2ram_size }}M'
+    line: 'SIZE={{ raspberry_pi_log2ram_size }}M'
 
-- name: log2ram.service
-  copy:
+- name: Log2ram.service
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/uninstall.sh
     dest: /usr/local/bin/uninstall-log2ram.sh
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
 - name: Ensure log2ram is running on startup
-  systemd:
+  ansible.builtin.systemd:
     name: log2ram
-    daemon_reload: yes
+    daemon_reload: true
     state: started
     enabled: true
 
-- name: log2ram cron logrotate
-  copy:
+- name: Log2ram cron logrotate
+  ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram.logrotate
     dest: /etc/logrotate.d/log2ram
-    mode: 0644
-    remote_src: yes
+    mode: '0644'
+    remote_src: true
 
 - name: Remove a previous log2ram version
-  file:
+  ansible.builtin.file:
     path: /var/log.hdd
     state: absent

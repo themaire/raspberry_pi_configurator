@@ -1,0 +1,20 @@
+all:
+  children:
+    new:
+      hosts:
+        pidac:
+          ansible_host: 192.168.0.23
+          ansible_python_interpreter: /usr/bin/python3
+
+
+        # 192.168.0.16:
+        # 192.168.0.121:
+    raspberrypi:
+      hosts:
+        pi1:
+          ansible_host: 192.168.2.2
+          ansible_python_interpreter: /usr/bin/python3
+        pi5:
+          ansible_host: 192.168.0.30
+        # parents:
+        # :

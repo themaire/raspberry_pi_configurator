@@ -1,0 +1,29 @@
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8087:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: tgvtgmWP
+      WORDPRESS_DB_NAME: wp_db
+    volumes:
+      - /var/wp/wordpress:/var/www/html
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: wp_db
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: tgvtgmWP
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - /var/wp/db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:

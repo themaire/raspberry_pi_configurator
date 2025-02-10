@@ -1,0 +1,72 @@
+---
+- name: "Install SABnzbd"
+  become: true
+  ansible.builtin.apt:
+    name: sabnzbdplus
+    state: present
+    update_cache: false
+
+- name: "Create download directories"
+  ansible.builtin.file:
+    path: "/home/{{ raspberry_pi_first_admin }}/Downloads/{{ item }}"
+    state: directory
+    mode: '0750'
+    owner: '{{ raspberry_pi_first_admin }}'
+    group: '{{ raspberry_pi_first_admin }}'
+  with_items:
+    - complete
+    - incomplete
+    - nzb-in
+
+- name: "Create configuration directory"
+  ansible.builtin.file:
+    path: "/home/{{ raspberry_pi_first_admin }}/.sabnzbd"
+    state: directory
+    mode: '0750'
+    owner: '{{ raspberry_pi_first_admin }}'
+    group: '{{ raspberry_pi_first_admin }}'
+
+# - name: "Copy SABnzbd Configuration File"
+#   copy:
+#     src: sabnzbd.ini
+#     dest: "/home/nico/.sabnzbd/"
+#     owner: '{{ raspberry_pi_first_admin }}'
+#     group: '{{ raspberry_pi_first_admin }}'
+
+- name: "Copy SABnzbd Configuration File"
+  become: true
+  ansible.builtin.copy:
+    src: "files/sabnzbd.ini"
+    dest: "/etc/sabnzbd.ini"
+    owner: '{{ raspberry_pi_first_admin }}'
+    group: '{{ raspberry_pi_first_admin }}'
+    mode: '0644'
+
+- name: "Configure /etc/default/sabnzbdplus"
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/etc/default/sabnzbdplus"
+    regexp: '^USER='
+    line: 'USER={{ raspberry_pi_first_admin }}'
+
+- name: "Add CONFIG to /etc/default/sabnzbdplus"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/sabnzbdplus
+    regexp: '^CONFIG='
+    line: 'CONFIG=/home/{{ raspberry_pi_first_admin }}/sabnzbd.ini'
+
+- name: "Reload Systemd Daemon"
+  ansible.builtin.become: true
+  ansible.builtin.command:
+    cmd: systemctl daemon-reload
+
+- name: "Enable and Start SABnzbd Service"
+  ansible.builtin.become: true
+  ansible.builtin.command:
+    cmd: service sabnzbdplus start
+
+- name: "Restart SABnzbd Service"
+  ansible.builtin.become: true
+  ansible.builtin.command:
+    cmd: service sabnzbdplus restart

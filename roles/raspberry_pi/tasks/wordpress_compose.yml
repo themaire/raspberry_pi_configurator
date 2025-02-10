@@ -1,0 +1,14 @@
+---
+- name: "Copy Docker Compose File"
+  ansible.builtin.copy:
+    src: files/wordpress_docker-compose.yml
+    dest: /home/nico/wordpress_docker-compose.yml
+    mode: '0644'
+
+- name: "Run Docker Compose"
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: /home/nico
+    files:
+      - wordpress_docker-compose.yml
+    state: present

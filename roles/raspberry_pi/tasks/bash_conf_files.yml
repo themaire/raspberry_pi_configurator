@@ -1,10 +1,76 @@
 ---
-- name: Copy .bash_aliases
-  copy:
-    src: bash_aliases
-    dest: /home/nico/.bash_aliases
+- name: "Get checksum of source .bash_aliases"
+  ansible.builtin.stat:
+    path: files/bash_aliases
+    checksum_algorithm: sha1
+  register: source_bash_aliases
 
-- name: Copy .bashrc
-  copy:
-    src: bashrc
-    dest: /home/nico/.bashrc
+- name: "Get checksum of destination .bash_aliases"
+  ansible.builtin.stat:
+    path: "/home/{{ bash_user.name }}/.bash_aliases"
+    checksum_algorithm: sha1
+  register: dest_bash_aliases
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  become: true
+  no_log: true
+
+- name: "Set fact for destination .bash_aliases checksums"
+  ansible.builtin.set_fact:
+    dest_bash_aliases_checksums: "{{ dest_bash_aliases_checksums | default({}) | combine({bash_user.name: (dest_bash_aliases.stat.checksum | default(''))}) }}"
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  become: true
+  no_log: true
+
+- name: "Copy .bash_aliases if different"
+  ansible.builtin.copy:
+    src: files/bash_aliases
+    dest: "/home/{{ bash_user.name }}/.bash_aliases"
+    mode: '0644'
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  when: source_bash_aliases.stat.checksum is defined and source_bash_aliases.stat.checksum != dest_bash_aliases_checksums[bash_user.name]
+  become: true
+  no_log: true
+
+- name: "Get checksum of source .bashrc"
+  ansible.builtin.stat:
+    path: files/bashrc
+    checksum_algorithm: sha1
+  register: source_bashrc
+
+- name: "Get checksum of destination .bashrc"
+  ansible.builtin.stat:
+    path: "/home/{{ bash_user.name }}/.bashrc"
+    checksum_algorithm: sha1
+  register: dest_bashrc
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  become: true
+  no_log: true
+
+- name: "Set fact for destination .bashrc checksums"
+  ansible.builtin.set_fact:
+    dest_bashrc_checksums: "{{ dest_bashrc_checksums | default({}) | combine({bash_user.name: (dest_bashrc.stat.checksum | default(''))}) }}"
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  become: true
+  no_log: true
+
+- name: "Copy .bashrc if different"
+  ansible.builtin.copy:
+    src: files/bashrc
+    dest: "/home/{{ bash_user.name }}/.bashrc"
+    mode: '0644'
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  when: source_bashrc.stat.checksum is defined and source_bashrc.stat.checksum != dest_bashrc_checksums[bash_user.name]
+  become: true
+  no_log: true

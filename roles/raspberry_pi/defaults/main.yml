@@ -1,44 +1,114 @@
 ---
-hostname_prefix: pi_
+# Variables file of the raspberry_pi's role
 
-locale: 'fr_FR.UTF-8'
-timezone: 'Europe/Paris'
+# Raspberry Pi specifications
+raspberry_pi_specs: "{{ lookup('file', 'files/raspberry_pi_specs.yml') | from_yaml }}"
 
-# Addiontional packages to install
-packages:
-- git
-- tmux
-- vim
-- nmon
-- neofetch
+raspberry_pi_tasks:
+  intro:
+    active: true
+    tasks:
+      - name: determine_pi_specs.yml
+        active: true
+  mandatory:
+    active: "{{ do_mandatory | default(true) }}"
+    tasks:
+      - name: addiontional_packages.yml
+        active: true
+      - name: add_user.yml
+        active: true
+      - name: bash_conf_files.yml
+        active: true
+      - name: log2ram.yml
+        active: false
+      - name: locale.yml
+        active: true
+      - name: timezone.yml
+        active: true
+      - name: disable_hdmi.yml
+        active: true
+      - name: gpu_mem_split.yml
+        active: true
+      - name: hostname.yml
+        active: true
+      - name: fan_control.yml
+        active: "{{ raspberry_pi_specs.gpio_fan is defined and raspberry_pi_specs.gpio_fan > 0 | default(false) }}"
+        # active: true
+  optional:
+    active: "{{ do_optional | default(false) }}"
+    tasks:
+      - name: install_docker.yml
+        active: false
+      - name: wordpress_docker-compose.yml
+        active: false
+      - name: install_sabnzbd.yml
+        active: false
+      - name: setup_dac.yml
+        active: true
+  experimental:
+    active: "{{ do_experimental | default(false) }}"
+    tasks:
+      - name: setup_zsh.yml
+        active: true
+
+
+# Hostname configuration
+# raspberry_pi_hostname_prefix: pi_
+# raspberry_pi_hostname: "{{ force_hostname | default('pi') }}"
+
+# First admin name:
+raspberry_pi_first_admin: nico
+
+
+raspberry_pi_locale: "fr_FR.UTF-8"
+raspberry_pi_timezone: "Europe/Paris"
+
+# Additional packages to install
+raspberry_pi_packages:
+  - tzdata
+  - git
+  - tmux
+  - vim
+  - nmon
+  - neofetch
 
 # RAM size for log2ram folder in megabytes
-log2ram_size: '128'
+raspberry_pi_log2ram_size: '128'
 
 # Changes SSH port
-# ssh_port : 28
+# raspberry_pi_ssh_port : 28
 
 # GPU memory split in megabytes
-gpu_mem: '16' # 16, 64, 128 or 256
+raspberry_pi_gpu_mem: '16' # 16, 64, 128 or 256
 
 # Disable HDMI to preserve power
-disable_hdmi: true
+# raspberry_pi_disable_hdmi: true
 
 # Disable IPv6 on specified interfaces
-disable_ipv6_interfaces:
-  - wlan0
-  - eth0
+# raspberry_pi_disable_ipv6_interfaces:
+#   - wlan0
+#   - eth0
 
-# Samba configuration
-samba_packages:
+## Samba configuration
+raspberry_pi_samba_packages:
   - samba-common
   - samba
   - samba-client
 
-samba_services:
+raspberry_pi_samba_services:
   - smbd
-#  - nmbd
+  - nmbd
 
-#samba_netbios_name: monserveur
-samba_configuration_dir: /etc/samba
-samba_configuration: "{{ samba_configuration_dir }}/smb.conf"
+raspberry_pi_samba_netbios_name: monserveur
+raspberry_pi_samba_configuration_dir: /etc/samba
+raspberry_pi_samba_configuration_template: smb.conf.j2
+raspberry_pi_samba_conf_file: "{{ raspberry_pi_samba_configuration_dir }}/smb.conf"
+
+raspberry_pi_sabnzbd: true
+
+# Variables pour ZSH :
+raspberry_pi_oh_my_zsh_url: "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+raspberry_pi_fzf_repo_url: "https://github.com/junegunn/fzf.git"
+raspberry_pi_zsh_syntax_highlighting_url: "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+raspberry_pi_zsh_autosuggestions_url: "https://github.com/zsh-users/zsh-autosuggestions.git"
+raspberry_pi_zsh_custom_dir: "/home/{{ zsh_user }}/.zsh"

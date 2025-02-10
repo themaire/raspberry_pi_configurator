@@ -1,0 +1,15 @@
+- name: Disabling HDMI Port
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^#?hdmi=.*'
+    line: 'hdmi=0'
+    state: present
+  become: true
+
+- name: Disabling audio on the jack port
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^#?dtparam=audio=.*'
+    line: 'dtparam=audio=off'
+    state: present
+  become: true

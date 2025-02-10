@@ -1,0 +1,124 @@
+# Explication des architectures :
+
+# armv6l : Utilisé pour les premières versions de Raspberry Pi (Raspberry Pi 1, A, A+, et Zero).
+
+# armv7l : Utilisé pour les premières versions du Raspberry Pi 2 Model B V1.1.
+
+# armhf : Utilisé pour les architectures ARM 32 bits avec support matériel pour les opérations en virgule flottante. 
+# Les Raspberry Pi 2 (versions récentes), 3 et 4 utilisent cette architecture.
+
+# arm64 : Utilisé pour les architectures ARM 64 bits.
+# Les Raspberry Pi 5, 4, 400 et Compute Module 4 utilisent cette architecture.
+
+raspberry_pi_models:
+  - modele: Raspberry Pi 5 Model B
+    nick: 5
+    cpu: 2.4 GHz quad-core ARM Cortex-A76
+    architecture: arm64
+    ram: 4 GB, 8 GB, 16 GB
+    gpu: Broadcom VideoCore VII
+    gpio_fan: 12
+
+  - modele: Raspberry Pi 400
+    nick: 400
+    cpu: 1.8 GHz quad-core ARM Cortex-A72
+    architecture: arm64
+    ram: 4 GB
+    gpu: Broadcom VideoCore VI
+    gpio_fan: 0
+
+  - modele: Raspberry Pi 4 Model B
+    nick: 4
+    cpu: 1.5 GHz quad-core ARM Cortex-A72
+    architecture: arm64
+    ram: 2 GB, 4 GB, 8 GB
+    gpu: Broadcom VideoCore VI
+    gpio_fan: 0
+
+  - modele: Raspberry Pi Compute Module 4
+    nick: CM4
+    cpu: 1.5 GHz quad-core ARM Cortex-A72
+    architecture: arm64
+    ram: 1 GB, 2 GB, 4 GB, 8 GB
+    gpu: Broadcom VideoCore VI
+    gpio_fan: 0
+
+  - modele: Raspberry Pi 3 Model B+
+    nick: 3+
+    cpu: 1.4 GHz quad-core ARM Cortex-A53
+    architecture: armhf
+    ram: 1 GB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi 3 Model A+
+    nick: 3A+
+    cpu: 1.4 GHz quad-core ARM Cortex-A53
+    architecture: armhf
+    ram: 512 MB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi 3 Model B
+    nick: 3
+    cpu: 1.2 GHz quad-core ARM Cortex-A53
+    architecture: armhf
+    ram: 1 GB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi 2 Model B V1.2
+    nick: 2 V1.2
+    cpu: 900 MHz quad-core ARM Cortex-A53
+    architecture: armhf
+    ram: 1 GB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi 2 Model B V1.1
+    nick: 2 V1.1
+    cpu: 900 MHz quad-core ARM Cortex-A7
+    architecture: armv7l
+    ram: 1 GB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi Zero W
+    nick: zero W
+    cpu: 1 GHz single-core ARM1176JZF-S
+    architecture: armv6l
+    ram: 512 MB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi Zero
+    nick: zero
+    cpu: 1 GHz single-core ARM1176JZF-S
+    architecture: armv6l
+    ram: 512 MB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi Model B
+    nick: 1
+    cpu: 700 MHz single-core ARM1176JZF-S
+    architecture: armv6l
+    ram: 512 MB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi A+
+    nick: A+
+    cpu: 700 MHz single-core ARM1176JZF-S
+    architecture: armv6l
+    ram: 512 MB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0
+
+  - modele: Raspberry Pi A
+    nick: A
+    cpu: 700 MHz single-core ARM1176JZF-S
+    architecture: armv6l
+    ram: 256 MB
+    gpu: Broadcom VideoCore IV
+    gpio_fan: 0

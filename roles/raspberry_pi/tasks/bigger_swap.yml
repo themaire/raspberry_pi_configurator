@@ -1,0 +1,49 @@
+---
+- name: Set swap size in /etc/dphys-swapfile
+  ansible.builtin.lineinfile:
+    path: /etc/dphys-swapfile
+    regexp: '^CONF_SWAPSIZE='
+    line: 'CONF_SWAPSIZE={{ raspberry_pi_swap_size }}'
+  become: true
+  register: swapfile_config
+
+- name: Stop dphys-swapfile service
+  ansible.builtin.service:
+    name: dphys-swapfile
+    state: stopped
+  become: true
+  when: swapfile_config.changed
+
+- name: Disable swap
+  ansible.builtin.command:
+    cmd: dphys-swapfile swapoff
+  become: true
+  when: swapfile_config.changed
+
+- name: Recreate the swap file
+  ansible.builtin.command:
+    cmd: dphys-swapfile setup
+  become: true
+  when: swapfile_config.changed
+
+- name: Enable swap
+  ansible.builtin.command:
+    cmd: dphys-swapfile swapon
+  become: true
+  when: swapfile_config.changed
+
+- name: Start dphys-swapfile service
+  ansible.builtin.service:
+    name: dphys-swapfile
+    state: started
+  become: true
+  when: swapfile_config.changed
+
+- name: Verify the swap configuration
+  ansible.builtin.shell: |
+    swapon --show && free -h
+  register: swap_check_output
+
+- name: Show swap verification output
+  ansible.builtin.debug:
+    msg: "{{ swap_check_output.stdout }}"

@@ -1,0 +1,13 @@
+---
+- name: Configure fan control with temperature thresholds for Raspberry Pi 5
+  ansible.builtin.blockinfile:
+    path: /boot/firmware/config.txt
+    block: |
+      # Activer le contrôle du ventilateur via GPIO 12 (port FAN)
+      dtoverlay=cooling_fan,gpiopin=12
+
+      # Définir les paliers de température et de vitesse
+      dtparam=fan_temp0=38000,fan_temp1=60000,fan_temp2=70000
+      dtparam=fan_speed0=33,fan_speed1=50,fan_speed2=100
+  become: true
+  when: pi_specs.gpio_fan > 0

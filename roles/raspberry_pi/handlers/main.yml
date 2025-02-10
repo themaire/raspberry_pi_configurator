@@ -1,24 +1,30 @@
 ---
-- name: restart cron
-  service:
+- name: Restart cron
+  ansible.builtin.systemd:
     name: cron
     state: restarted
 
-- name: update tzdata
-  command: dpkg-reconfigure -f noninteractive tzdata
+- name: Restart ssh
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted
 
-- name: restart ssh
-  service: name=ssh state=restarted
+- name: Reconfigure locale
+  ansible.builtin.command:
+    cmd: dpkg-reconfigure locales --frontend noninteractive
+    creates: /etc/locale.gen
 
-- name: reconfigure locale
-  command: dpkg-reconfigure locales --frontend noninteractive
-
-- name: reboot
-  reboot:
+- name: Reboot
+  ansible.builtin.reboot:
     reboot_timeout: 1200
 
 - name: Restart Samba services
-  service:
+  ansible.builtin.systemd:
     name: "{{ item }}"
     state: restarted
   with_items: "{{ samba_services }}"
+
+- name: Restart log2ram
+  ansible.builtin.systemd:
+    name: log2ram
+    state: restarted

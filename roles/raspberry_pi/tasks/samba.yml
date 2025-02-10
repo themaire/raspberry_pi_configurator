@@ -2,30 +2,22 @@
 ---
 
 - name: Install Samba packages
-  package:
-    name: "{{ samba_packages }}"
+  ansible.builtin.package:
+    name: "{{ raspberry_pi_samba_packages }}"
     state: present
-  tags: samba
+    tags: samba
 
 - name: Samba configuration
-  template:
-    src: smb.conf.j2
-    dest: "{{ samba_configuration }}"
-    validate: 'testparm -s %s'
-  notify:
-    - Restart Samba services
-  tags: samba
-
-- name: Start Samba service(s)
-  service:
-    name: "{{ item }}"
-    state: started
-    enabled: true
-  with_items: "{{ samba_services }}"
-  tags: samba
+  ansible.builtin.template:
+    src: "{{ raspberry_pi_samba_configuration_template }}"
+    dest: "{{ raspberry_pi_samba_conf_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+    tags: samba
 
 - name: Create Samba users if they don't exist yet
-  shell: >
+  ansible.builtin.shell: >
     set -o nounset -o pipefail -o errexit &&
     (pdbedit --user={{ item.name }} 2>&1 > /dev/null) \
     || (echo {{ item.password }}; echo {{ item.password }}) \
@@ -36,4 +28,12 @@
   no_log: true
   register: create_user_output
   changed_when: "'Added user' in create_user_output.stdout"
+  tags: samba
+
+- name: Start Samba service(s)
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items: "{{ raspberry_pi_samba_services }}"
   tags: samba

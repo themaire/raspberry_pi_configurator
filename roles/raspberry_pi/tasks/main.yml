@@ -1,61 +1,21 @@
 ---
+# List of tasks to be executed by the role
 
-- name: Bienvenue
-  debug:
-    msg: "Salut les geeks, nous allons configurer une install de Raspbian neuve."
+- name: "Welcome message"
+  ansible.builtin.debug:
+    msg:
+      - "Hello geeks, nous allons configurer une nouvelle installation de Raspberry Pi OS."
+      - "Nous allons (entre autre), installer les packages suivants : {{ raspberry_pi_packages }}"
 
-- name: Update and upgrade apt packages
-  become: true
-  apt:
-    upgrade: yes
-    update_cache: yes
-    cache_valid_time: 3600
-  #notify: reboot
-
-- include_tasks: addiontional-packages.yml
-  when: packages is defined
-
-- include_tasks: add_user.yml
-  when: users_admin is defined
-
-- include_tasks: bash_conf_files.yml
-  when: users_admin is defined
-
-- include_tasks: locale.yml
-  when: locale is defined
-
-- include_tasks: timezone.yml
-  when: timezone is defined
-
-- include_tasks: log2ram.yml
-  when: log2ram_size is defined
-
-- include_tasks: disable-hdmi.yml
-  when: disable_hdmi
-
-- include_tasks: gpu-mem-split.yml
-  when: gpu_mem is defined
-
-- include_tasks: change-hostname.yml
-  when: hostname_prefix is defined
-
-- include_tasks: disable-ipv6.yml
-  when: disable_ipv6_interfaces is defined
-
-- include_tasks: samba.yml
-  when: samba_packages is defined
-
-###
-
-
-# a voir plus tard, pas tres necessaire pour le moment
-# add_user.yml fait le job pour la clé ssh
-#- include_tasks: ssh.yml
-
-# A creuser, pas très obligatoire pour à la maison
-#- include_tasks: firewall.yml
-
-# - name: unattended upgrades
-#   include_tasks_role:
-#     name: jnv.unattended-upgrades
-#   when: unattended_origins_patterns is defined
+# Loop over task categories
+- name: "Include task categories"
+  ansible.builtin.include_tasks:
+    file: include_task_category.yml
+  loop:
+    - { category: "intro", tasks: "{{ raspberry_pi_tasks.intro.tasks }}", active: "{{ raspberry_pi_tasks.intro.active }}" }
+    - { category: "mandatory", tasks: "{{ raspberry_pi_tasks.mandatory.tasks }}", active: "{{ raspberry_pi_tasks.mandatory.active }}" }
+    - { category: "optional", tasks: "{{ raspberry_pi_tasks.optional.tasks }}", active: "{{ raspberry_pi_tasks.optional.active }}" }
+    - { category: "experimental", tasks: "{{ raspberry_pi_tasks.experimental.tasks }}", active: "{{ raspberry_pi_tasks.experimental.active }}" }
+  loop_control:
+    label: "{{ item.category }}"
+  when: item.active

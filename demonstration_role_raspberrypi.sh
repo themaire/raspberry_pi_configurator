@@ -19,7 +19,7 @@
 # L'application du playbook Ansible est maintenant possible car toute la magie sera
 # injectée par SSH.
 
-ansible-playbook -i list_piansible.yml -u pi -k --ask-vault-pass play_configrasp.yml
+ansible-playbook -i inventory.yml -u pi -k --ask-vault-pass play_configrasp.yml
 
 # Il demande le mot de passe SSH de l'utilisateur Pi ainsi que celui du fichier de variables
 # crypté qui contient les mots de passe des utilisateurs à créer ^^.

@@ -1,0 +1,156 @@
+---
+# Disable onboard HDMI audio
+- name: Disable onboard HDMI audio
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^dtparam=audio'
+    line: 'dtparam=audio=off'
+    state: present
+
+# Enable I2S for DAC
+- name: Enable I2S for DAC
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^dtparam=i2s'
+    line: 'dtparam=i2s=on'
+    state: present
+
+# Add overlay for HifiBerry DAC
+- name: Configure HifiBerry DAC overlay
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^dtoverlay=hifiberry-dac'
+    line: 'dtoverlay=hifiberry-dac'
+    state: present
+
+# Disable HDMI (no video/audio output)
+- name: Disable HDMI (no video/audio output)
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^hdmi_force_hotplug'
+    line: 'hdmi_force_hotplug=0'
+    state: present
+
+# Disable automatic display detection
+- name: Disable automatic display detection
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^display_auto_detect'
+    line: 'display_auto_detect=0'
+    state: present
+
+
+- name: Reboot Raspberry Pi to apply changes
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+
+- name: Install required packages for MPD and ALSA
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - mpd
+      - mpc
+      - alsa-utils
+    state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  
+- name: Check if /etc/asound.conf.bak exists
+  ansible.builtin.stat:
+    file: /etc/asound.conf
+  register: asound_conf_bak
+
+- name: Backup existing ALSA configuration file
+  ansible.builtin.copy:
+    src: /etc/asound.conf
+    dest: /etc/asound.conf.bak
+    mode: '0644'
+    owner: root
+    group: root
+    remote_src: true
+  when: asound_conf_bak.stat.exists
+
+- name: Configure ALSA for HifiBerry DAC
+  ansible.builtin.copy:
+    content: |
+      pcm.!default {
+          type             plug
+          slave.pcm       "sftvol"
+      }
+
+      ctl.!default {
+       type hw card 0
+      }
+
+      pcm.sftvol {
+          type            softvol
+          slave.pcm       "plughw:0"
+          control {
+              name        "PCM"
+              card        0
+          }
+      }
+
+      ## Softvol
+      # Enter or change the pcm.!default section to:
+      #
+      # pcm.!default {
+      #     type             plug
+      #     slave.pcm       "sftvol"
+      # }
+    dest: /etc/asound.conf
+    mode: '0644'
+    owner: root
+    group: root
+  
+- name: Check if /etc/mpd.conf.bak exists
+  ansible.builtin.stat:
+    file: /etc/mpd.conf
+  register: mpd_conf_bak
+
+- name: Backup existing MPD configuration file
+  ansible.builtin.copy:
+    src: /etc/mpd.conf
+    dest: /etc/mpd.conf.bak
+    mode: '0644'
+    owner: root
+    group: root
+    remote_src: true
+  when: mpd_conf_bak.stat.exists
+
+- name: Configure MPD for HifiBerry DAC
+  ansible.builtin.blockinfile:
+    path: /etc/mpd.conf
+    marker: "# {mark} Ansible managed block HifiBerry DAC"
+    block: |
+      audio_output {
+        name "snd_rpi_hifiberry_dac"
+        type "alsa"
+        device "hw:0,0"
+        mixer_control "software"
+        auto_resample "no"
+        auto_format "no"
+        enabled "yes"
+      }
+
+- name: Restart MPD service
+  ansible.builtin.service:
+    name: mpd
+    state: restarted
+
+- name: Verify ALSA sound devices
+  ansible.builtin.command:
+    cmd: aplay -l
+  register: aplay_output
+
+- debug:
+    var: aplay_output.stdout
+
+- name: Verify MPD status and outputs
+  ansible.builtin.command:
+    cmd: mpc outputs
+  register: mpc_outputs
+
+- debug:
+    var: mpc_outputs.stdout
+

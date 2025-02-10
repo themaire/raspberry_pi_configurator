@@ -1,9 +1,0 @@
-- name: Install required packages
-  apt:
-    update_cache: true
-    name: "{{ packages }}"
-    state: present
-
-- name: Clean apt local cache
-  apt:
-    clean: true

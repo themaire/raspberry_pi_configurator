@@ -1,0 +1,17 @@
+---
+- name: Set hostname using inventory_hostname
+  ansible.builtin.hostname:
+    name: '{{ inventory_hostname }}'
+
+- name: Ensure /etc/hostname contains the correct hostname
+  ansible.builtin.copy:
+    dest: /etc/hostname
+    content: '{{ inventory_hostname }}'
+    mode: '0644'
+
+- name: Ensure /etc/hosts contains the correct hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1\s+'
+    line: "127.0.1.1 {{ inventory_hostname }}"
+    state: present

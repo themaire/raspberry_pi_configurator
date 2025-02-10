@@ -1,0 +1,56 @@
+- name: Install required packages
+  apt:
+    update_cache: false
+    name: sabnzbdplus
+    state: present
+
+- name: Clean apt local cache
+  apt:
+    clean: true
+
+- name: Créer les répertoires de téléchargement
+  file:
+    path: "/home/nico/Downloads/{{ item }}"
+    state: directory
+    mode: '0750'
+    owner: nico
+    group: nico
+  with_items:
+    - complete
+    - incomplete
+    - nzb-in
+
+
+- name: Créer le répertoire de conf
+  file:
+    path: "/home/nico/.sabnzbd"
+    state: directory
+    mode: '0750'
+    owner: nico
+    group: nico
+
+- name: Copier le fichier de config
+  copy:
+    src: sabnzbd.ini
+    dest: "/home/nico/.sabnzbd/"
+    owner: nico
+    group: nico
+
+# Ne pas oublier d'aller éditer le fichier : /etc/default/sabnzbdplus
+# pour mettre nico en tant qu'utilisateur et le port :
+
+# # [required] user or uid of account to run the program as:
+# USER=nico
+
+# # [optional] full path to the configuration file of your choice;
+# #            otherwise, the default location (in $USER's home
+# #            directory) is used:
+# CONFIG=
+
+# # [optional] hostname/ip and port number to listen on:
+# HOST=0.0.0.0
+# PORT=8080
+
+- name: Activer le service sabnzbd
+  ansible.builtin.shell: |
+    service sabnzbdplus start

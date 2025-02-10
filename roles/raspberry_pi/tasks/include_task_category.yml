@@ -1,0 +1,9 @@
+---
+- name: "Include these tasks {{ item.category }}"
+  ansible.builtin.include_tasks:
+    file: "{{ task.name }}"
+  loop: "{{ item.tasks }}"
+  loop_control:
+    label: "{{ task.name }}"
+    loop_var: task
+  when: task.active | default(false)

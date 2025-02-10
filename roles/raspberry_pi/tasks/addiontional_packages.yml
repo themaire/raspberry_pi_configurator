@@ -1,0 +1,10 @@
+---
+- name: "Install required packages"
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ raspberry_pi_packages }}"
+    state: present
+
+- name: "Clean apt local cache"
+  ansible.builtin.apt:
+    clean: true

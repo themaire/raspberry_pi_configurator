@@ -1,0 +1,38 @@
+---
+
+- name: "Display gathered facts"
+  ansible.builtin.debug:
+    var: ansible_facts
+  when: ansible_facts
+
+- name: "Load Raspberry Pi specifications"
+  ansible.builtin.include_vars:
+    file: files/raspberry_pi_specs.yml
+
+- name: "Get Raspberry Pi model"
+  ansible.builtin.command:
+    cmd: cat /proc/device-tree/model
+  register: pi_model_output
+  changed_when: false
+
+- name: "Set Raspberry Pi model fact"
+  ansible.builtin.set_fact:
+    pi_model: "{{ pi_model_output.stdout | regex_replace(' Rev.*', '') }}"
+
+- name: "Debug Raspberry Pi model"
+  ansible.builtin.debug:
+    msg:
+      - "Modele du fichier /proc/device-tree/model : '{{ pi_model_output.stdout }}'"
+      - "Modele du fichier remixé sans le rev : '{{ pi_model }}'"
+
+- name: "Determine Raspberry Pi specs"
+  ansible.builtin.set_fact:
+    pi_specs: "{{ raspberry_pi_spec }}"
+  loop: "{{ raspberry_pi_specs.raspberry_pi_models }}"
+  loop_control:
+    loop_var: raspberry_pi_spec
+  when: pi_model in raspberry_pi_spec.modele
+
+- name: "Debug Raspberry Pi specs"
+  ansible.builtin.debug:
+    var: pi_specs

@@ -1,6 +1,31 @@
 ---
 - name: Setup locale
   locale_gen:
-    name: '{{ locale }}'
+    name: '{{ raspberry_pi_locale }}'
     state: present
-  notify: reconfigure locale
+  register: setup_locale_result
+
+- name: Remove english locale
+  locale_gen:
+    name: en_GB.UTF-8
+    state: absent
+  when: setup_locale_result.changed
+
+- name: Ensure locale environment variables are set
+  ansible.builtin.copy:
+    dest: /etc/default/locale
+    content: |
+      LANG={{ raspberry_pi_locale }}
+      LC_CTYPE={{ raspberry_pi_locale }}
+      LC_MESSAGES={{ raspberry_pi_locale }}
+      LC_COLLATE={{ raspberry_pi_locale }}
+      LC_ALL={{ raspberry_pi_locale }}
+    mode: '0644'
+  register: locale_copy_result
+
+- name: Install French man pages
+  ansible.builtin.apt:
+    name: manpages-fr
+    state: present
+  become: true
+  when: locale_copy_result.changed

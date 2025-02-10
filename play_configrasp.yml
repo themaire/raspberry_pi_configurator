@@ -1,6 +1,14 @@
-- hosts: new
+- name: Configure some new group of one Raspberry Pi
+  # Hostname or group name from the inventory file
+  hosts: pidac
   become: true
-  gather_facts: yes
+  gather_facts: false
+
+  vars:
+    # force_hostname: bastion
+    do_mandatory: false
+    do_optional: true
+    do_experimental: false
 
   roles:
     - raspberry_pi
