@@ -1,0 +1,6 @@
+#users_password_nico: "{{ vault_users_password_nico }}"
+#users_password_nicolas: "{{ vault_users_password_nicolas }}"
+users_admin:
+- { name: "nico", password: "{{ vault_users_password_nico }}" }
+users_no_admin:
+- { name: "nicolas", password: "{{ vault_users_password_nicolas }}" }

@@ -14,19 +14,19 @@ raspberry_pi_tasks:
     active: "{{ do_mandatory | default(true) }}"
     tasks:
       - name: addiontional_packages.yml
-        active: false
+        active: true
       - name: add_user.yml
-        active: false
+        active: true
       - name: bash_conf_files.yml
-        active: false
+        active: true
       - name: setup_zsh.yml
-        active: false
+        active: true
       - name: log2ram.yml
-        active: false
+        active: true
       - name: locale.yml
-        active: false
+        active: true
       - name: timezone.yml
-        active: false
+        active: true
       - name: disable_hdmi.yml
         active: "{{ headless is defined and headless is true | default(false) }}"
       - name: gpu_mem_split.yml
@@ -34,7 +34,7 @@ raspberry_pi_tasks:
       - name: samba.yml
         active: true
       - name: hostname.yml
-        active: false
+        active: true
       - name: fan_control.yml
         # Active if the GPIO fan is defined and greater than 0. So, only on the Raspberry Pi 5.
         active: "{{ raspberry_pi_specs.gpio_fan is defined and raspberry_pi_specs.gpio_fan > 0 | default(false) }}"

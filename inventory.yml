@@ -38,9 +38,9 @@ all:
           # external_drive: /dev/sda1
           # raspberry_pi_sda_spindown : 120 # 2 minutes. Modify here if you want to change the spindown time for this host only.
         pi4:
-          ansible_host: "pi4w.local"
-          force_hostname: "pi4w"
-          ansible_user: pi
+          ansible_host: "pi4.local"
+          force_hostname: "pi4"
+          ansible_user: nico
           raspberry_pi_gpu_mem: '512'
           ansible_python_interpreter: /usr/bin/python3
           # external_drive: /dev/sda1
