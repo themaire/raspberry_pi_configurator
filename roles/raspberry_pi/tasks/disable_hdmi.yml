@@ -21,3 +21,10 @@
     state: link
   become: true
   tags: disable_hdmi
+
+- name: Disable console autologin (remove autologin.conf)
+  ansible.builtin.file:
+    path: /etc/systemd/system/getty@tty1.service.d/autologin.conf
+    state: absent
+  become: true
+  tags: disable_hdmi
