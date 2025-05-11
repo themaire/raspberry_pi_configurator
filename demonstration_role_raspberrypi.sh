@@ -21,5 +21,11 @@
 
 ansible-playbook -i inventory.yml -u pi -k --ask-vault-pass play_configrasp.yml
 
+# L'option -l permet de cibler un hôte spécifique dans l'inventaire. Cet hot doit faire partie
+# du groupe [raspberrypi ou new par exemple] défini dans le fichier d'inventaire.
+# Cela outre passe la valeur hosts définie dans le playbook play_configrasp.yml.
+# Exemple :
+# ansible-playbook -i inventory.yml -k --ask-vault-pass -l pi4 play_configrasp.yml
+
 # Il demande le mot de passe SSH de l'utilisateur Pi ainsi que celui du fichier de variables
 # crypté qui contient les mots de passe des utilisateurs à créer ^^.

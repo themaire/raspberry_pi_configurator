@@ -19,9 +19,9 @@
 - name: Create Samba users if they don't exist yet
   ansible.builtin.shell: >
     set -o nounset -o pipefail -o errexit &&
-    (pdbedit --user={{ item.name }} 2>&1 > /dev/null) \
-    || (echo {{ item.password }}; echo {{ item.password }}) \
-    | smbpasswd -s -a {{ item.name }}
+    (pdbedit --user={{ samba_user.name }} 2>&1 > /dev/null) \
+    || (echo {{ samba_user.password }}; echo {{ samba_user.password }}) \
+    | smbpasswd -s -a {{ samba_user.name }}
   args:
     executable: /bin/bash
   loop: "{{ users_admin }}"
@@ -34,7 +34,7 @@
 
 - name: Start Samba service(s)
   ansible.builtin.service:
-    name: "{{ item }}"
+    name: "{{ samba_service }}"
     state: started
     enabled: true
   loop: "{{ raspberry_pi_samba_services }}"
