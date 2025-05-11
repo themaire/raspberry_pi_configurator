@@ -5,7 +5,7 @@
   ansible.builtin.package:
     name: "{{ raspberry_pi_samba_packages }}"
     state: present
-    tags: samba
+  tags: samba
 
 - name: Samba configuration
   ansible.builtin.template:
@@ -14,7 +14,7 @@
     owner: root
     group: root
     mode: '0644'
-    tags: samba
+  tags: samba
 
 - name: Create Samba users if they don't exist yet
   ansible.builtin.shell: >

@@ -1,0 +1,23 @@
+- name: Installer hdparm
+  apt:
+    name: hdparm
+    state: present
+    update_cache: yes
+
+- name: Configurer le fichier /etc/hdparm.conf pour /dev/sda
+  blockinfile:
+    path: /etc/hdparm.conf
+    block: |
+      /dev/sda {
+          spindown_time = {{ raspberry_pi_sda_spindown }}
+      }
+    marker: "# {mark} ANSIBLE: hdparm config for /dev/sda"
+
+- name: Appliquer la configuration immédiatement
+  command: hdparm -S 120 /dev/sda
+  register: hdparm_output
+  changed_when: "'setting standby to' in hdparm_output.stdout"
+
+- name: Afficher le résultat de hdparm
+  debug:
+    var: hdparm_output.stdout

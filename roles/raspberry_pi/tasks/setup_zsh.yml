@@ -28,6 +28,7 @@
     cmd: "sh /home/{{ zsh_user.name }}/install-oh-my-zsh.sh"
     creates: "/home/{{ zsh_user.name }}/.oh-my-zsh"
   become: true
+  become_user: "{{ zsh_user.name }}"
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: zsh_user
@@ -40,6 +41,10 @@
   loop_control:
     loop_var: zsh_user
 
+- name : See the fzf_repo_stat variable
+  ansible.builtin.debug:
+    var: fzf_repo_stat
+
 - name: Clone fzf repository for each user
   ansible.builtin.git:
     repo: "{{ raspberry_pi_fzf_repo_url }}"
@@ -47,7 +52,7 @@
     depth: 1
     update: false
   become: true
-  when: not fzf_repo_stat.results[zsh_user.ansible_loop.index0].stat.exists
+  when: not fzf_repo_stat.results[0].stat.exists
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: zsh_user
@@ -76,7 +81,7 @@
     dest: "{{ raspberry_pi_zsh_custom_dir }}/zsh-syntax-highlighting"
     update: true
   become: true
-  when: not zsh_syntax_highlighting_stat.results[zsh_user.ansible_loop.index0].stat.exists
+  when: not zsh_syntax_highlighting_stat.results[0].stat.exists
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: zsh_user
@@ -95,31 +100,68 @@
     dest: "{{ raspberry_pi_zsh_custom_dir }}/zsh-autosuggestions"
     update: false
   become: true
-  when: not zsh_autosuggestions_stat.results[zsh_user.ansible_loop.index0].stat.exists
+  when: not zsh_autosuggestions_stat.results[0].stat.exists
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: zsh_user
 
-- name: Configure .zshrc with plugins and settings for each user
-  ansible.builtin.lineinfile:
-    path: "/home/{{ zsh_user.name }}/.zshrc"
-    state: present
-    create: true
-    line: "{{ zshrc_line }}"
+# - name: Configure .zshrc with plugins and settings for each user
+#   ansible.builtin.lineinfile:
+#     path: "/home/{{ zsh_user.name }}/.zshrc"
+#     state: present
+#     create: true
+#     line: "{{ zshrc_lines }}"
+#   become: true
+#   loop: "{{ users_admin }}"
+#   loop_control:
+#     loop_var: zsh_user
+#   vars:
+#     zshrc_lines:
+#       - 'export ZSH="/home/{{ zsh_user.name }}/.oh-my-zsh"'
+#       - 'ZSH_THEME="robbyrussell"'
+#       - 'plugins=(git zsh-syntax-highlighting zsh-autosuggestions)'
+#       - 'source $ZSH/oh-my-zsh.sh'
+#       - 'source {{ raspberry_pi_zsh_custom_dir }}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
+#       - 'source {{ raspberry_pi_zsh_custom_dir }}/zsh-autosuggestions/zsh-autosuggestions.zsh'
+#       - '[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh'
+#       - 'bindkey -e'
+
+# Nouvelle tâche pour installer Oh My Zsh directement depuis le script en ligne
+# - name: Install Oh My Zsh directly from the online script for each user
+#   ansible.builtin.command:
+#     cmd: "sh -c \"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+#     creates: "/home/{{ zsh_user.name }}/.oh-my-zsh"
+#     chdir: "/home/{{ zsh_user.name }}"
+#   become: true
+#   become_user: "{{ zsh_user.name }}"
+#   loop: "{{ users_admin }}"
+#   loop_control:
+#     loop_var: zsh_user
+
+# Créer le dossier /usr/local/share/zsh_custom avec les permissions appropriées
+- name: Create /usr/local/share/zsh_custom directory
+  ansible.builtin.file:
+    path: /usr/local/share/zsh_custom
+    state: directory
+    mode: '0755'
   become: true
+
+# Ajouter la commande pour créer un fichier d'alias global dans /etc/zsh/zshrc
+- name: Add global aliases to /etc/zsh/zshrc
+  ansible.builtin.command:
+    cmd: "echo 'source /usr/local/share/zsh_custom/global_aliases.zsh' | sudo tee -a /etc/zsh/zshrc"
+  become: true
+
+- name: Copy the zshrc config file
+  ansible.builtin.copy:
+    src: "files/.zshrc"
+    dest: "/home/{{ zsh_user.name }}/.zshrc"
+    owner: "{{ zsh_user.name }}"
+    group: "{{ zsh_user.name }}"
+    mode: '0644'
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: zsh_user
-  vars:
-    zshrc_lines:
-      - 'export ZSH="/home/{{ zsh_user.name }}/.oh-my-zsh"'
-      - 'ZSH_THEME="robbyrussell"'
-      - 'plugins=(git zsh-syntax-highlighting zsh-autosuggestions)'
-      - 'source $ZSH/oh-my-zsh.sh'
-      - 'source {{ raspberry_pi_zsh_custom_dir }}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
-      - 'source {{ raspberry_pi_zsh_custom_dir }}/zsh-autosuggestions/zsh-autosuggestions.zsh'
-      - '[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh'
-      - 'bindkey -e'
 
 - name: Change ownership and permissions of .zshrc for each user
   ansible.builtin.file:

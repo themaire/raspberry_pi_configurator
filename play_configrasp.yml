@@ -1,11 +1,14 @@
 - name: Configure some new group of one Raspberry Pi
+
   # Hostname or group name from the inventory file
-  hosts: pidac
+  hosts: all
+  # hosts: new # if you want to run the playbook on all hosts in the inventory, use 'all' instead of 'new'
+  # hosts: un nom de machine ou un groupe de machines
+
   become: true
-  gather_facts: false
+  gather_facts: true
 
   vars:
-    # force_hostname: bastion
     do_mandatory: false
     do_optional: true
     do_experimental: false

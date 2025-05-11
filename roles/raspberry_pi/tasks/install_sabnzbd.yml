@@ -18,21 +18,6 @@
     - incomplete
     - nzb-in
 
-- name: "Create configuration directory"
-  ansible.builtin.file:
-    path: "/home/{{ raspberry_pi_first_admin }}/.sabnzbd"
-    state: directory
-    mode: '0750'
-    owner: '{{ raspberry_pi_first_admin }}'
-    group: '{{ raspberry_pi_first_admin }}'
-
-# - name: "Copy SABnzbd Configuration File"
-#   copy:
-#     src: sabnzbd.ini
-#     dest: "/home/nico/.sabnzbd/"
-#     owner: '{{ raspberry_pi_first_admin }}'
-#     group: '{{ raspberry_pi_first_admin }}'
-
 - name: "Copy SABnzbd Configuration File"
   become: true
   ansible.builtin.copy:
@@ -54,7 +39,8 @@
   ansible.builtin.lineinfile:
     path: /etc/default/sabnzbdplus
     regexp: '^CONFIG='
-    line: 'CONFIG=/home/{{ raspberry_pi_first_admin }}/sabnzbd.ini'
+    # line: 'CONFIG=/home/{{ raspberry_pi_first_admin }}/sabnzbd.ini'
+    line: 'CONFIG=/etc/sabnzbd.ini'
 
 - name: "Reload Systemd Daemon"
   ansible.builtin.become: true

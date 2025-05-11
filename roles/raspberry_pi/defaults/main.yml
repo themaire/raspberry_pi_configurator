@@ -19,38 +19,42 @@ raspberry_pi_tasks:
         active: true
       - name: bash_conf_files.yml
         active: true
+      - name: setup_zsh.yml
+        active: true
       - name: log2ram.yml
-        active: false
+        active: "{{ (pi_specs.nick | int) != 5 }}" # Skip on Raspberry Pi 5
       - name: locale.yml
         active: true
       - name: timezone.yml
         active: true
       - name: disable_hdmi.yml
-        active: true
+        active: false
       - name: gpu_mem_split.yml
-        active: true
+        active: false
       - name: hostname.yml
         active: true
+      - name: samba.yml
+        active: true
       - name: fan_control.yml
+        # Active if the GPIO fan is defined and greater than 0. So, only on the Raspberry Pi 5.
         active: "{{ raspberry_pi_specs.gpio_fan is defined and raspberry_pi_specs.gpio_fan > 0 | default(false) }}"
         # active: true
   optional:
     active: "{{ do_optional | default(false) }}"
     tasks:
       - name: install_docker.yml
-        active: false
+        active: "{{ (pi_specs.nick | int) != 1 }}" # Skip on Raspberry Pi 1
       - name: wordpress_docker-compose.yml
-        active: false
+        active: "{{ (pi_specs.nick | int) != 1 }}" # Skip on Raspberry Pi 1
       - name: install_sabnzbd.yml
         active: false
       - name: setup_dac.yml
-        active: true
+        active: false
+      - name: set_hdparm_spindown.yml
+        active: "{{ external_drive is defined }}" # Skip if no external drive is defined in inventory host definition
   experimental:
     active: "{{ do_experimental | default(false) }}"
     tasks:
-      - name: setup_zsh.yml
-        active: true
-
 
 # Hostname configuration
 # raspberry_pi_hostname_prefix: pi_
@@ -111,4 +115,7 @@ raspberry_pi_oh_my_zsh_url: "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/m
 raspberry_pi_fzf_repo_url: "https://github.com/junegunn/fzf.git"
 raspberry_pi_zsh_syntax_highlighting_url: "https://github.com/zsh-users/zsh-syntax-highlighting.git"
 raspberry_pi_zsh_autosuggestions_url: "https://github.com/zsh-users/zsh-autosuggestions.git"
-raspberry_pi_zsh_custom_dir: "/home/{{ zsh_user }}/.zsh"
+zsh_custom_dir: "/home/{{ zsh_user }}/.zsh"
+
+raspberry_pi_sda_spindown: 120
+

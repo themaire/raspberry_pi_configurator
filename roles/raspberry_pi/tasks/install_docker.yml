@@ -16,26 +16,35 @@
     url: https://download.docker.com/linux/debian/gpg
     state: present
 
+- name: Debug read the pi_specs variable (from Raspberry Pi specs)
+  ansible.builtin.debug:
+    msg: "Pi specs: {{ pi_specs }}"
+
 - name: Add Docker repository for arm64
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=arm64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
     state: present
-  when: ansible_architecture == 'aarch64' and pi_model.nick == '5'
+  # when: ansible_architecture == 'aarch64' and pi_model.nick == '5'
+  # Cas du pi 4 et 5. On regarde nick tout simplement
+  when: pi_specs.nick | int == 5 or pi_specs.nick | int == 4
 
 - name: Add Docker repository for armhf
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
     state: present
-  when: ansible_architecture == 'armv7l'
+  # when: ansible_architecture == 'armv7l'
+  # Cas du pi 2 et 3. On regarde nick tout simplement. A VERIFIER POUR DE VRAI
+  when: pi_specs.nick == '3+' or pi_specs.nick == '3A+' or pi_specs.nick == '3' or pi_specs.nick == '2' or pi_specs.nick == '1' or pi_specs.nick == '0'
 
 - name: Add Docker repository for armv6l
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian {{ ansible_distribution_release }} stable"
     state: present
-  when: ansible_architecture == 'armv6l'
+  # when: ansible_architecture == 'armv6l'
+  when: pi_specs.nick == 'zero' or pi_specs.nick == 'zero W'
 
 - name: Update apt cache
   become: true
@@ -67,3 +76,32 @@
     append: true
   with_items:
     - "{{ users_admin }}"
+
+- name: Create Docker group if it does not exist
+  become: true
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add users to Docker group
+  become: true
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: docker
+    append: true
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: item
+
+- name: Enable Docker service to start on boot
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Restart Docker service
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    state: restarted

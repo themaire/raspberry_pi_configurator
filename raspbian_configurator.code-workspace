@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"yaml.schemas": {
-			"https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks": "file:///Users/nico/Documents/ansible/raspbian_configurator/roles/raspberry_pi/tasks/change-hostname.yml"
+			"https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks": "file:///Users/nico/Documents/ansible/raspbian_configurator/roles/raspberry_pi/tasks/change-hostname.yml",
+			"https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": "file:///Users/nico/Downloads/Jellyfin.yaml"
 		},
 		"ansible.python.interpreterPath": "/opt/homebrew/bin/python3"
 	}
