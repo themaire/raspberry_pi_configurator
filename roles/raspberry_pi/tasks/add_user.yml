@@ -13,7 +13,7 @@
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: admin_user
-  no_log: true
+  no_log: false
 
 - name: "Add Authorized Keys"
   ansible.builtin.authorized_key:

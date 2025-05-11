@@ -24,7 +24,9 @@
     | smbpasswd -s -a {{ item.name }}
   args:
     executable: /bin/bash
-  with_items: "{{ users_admin }}"
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: samba_user
   no_log: true
   register: create_user_output
   changed_when: "'Added user' in create_user_output.stdout"
@@ -35,5 +37,7 @@
     name: "{{ item }}"
     state: started
     enabled: true
-  with_items: "{{ raspberry_pi_samba_services }}"
+  loop: "{{ raspberry_pi_samba_services }}"
+  loop_control:
+    loop_var: samba_service
   tags: samba

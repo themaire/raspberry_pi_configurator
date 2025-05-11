@@ -2,6 +2,6 @@
   ansible.builtin.lineinfile:
     path: /boot/firmware/config.txt
     regexp: '^#?gpu_mem=.*'
-    line: 'gpu_mem=16'
+    line: 'gpu_mem={{ raspberry_pi_gpu_mem | default(128) }}'
     state: present
   become: true

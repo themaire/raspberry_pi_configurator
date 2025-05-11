@@ -13,3 +13,11 @@
     line: 'dtparam=audio=off'
     state: present
   become: true
+
+- name: Force boot to console mode (without graphical interface)
+  ansible.builtin.file:
+    src: /lib/systemd/system/multi-user.target
+    dest: /etc/systemd/system/default.target
+    state: link
+  become: true
+  tags: disable_hdmi

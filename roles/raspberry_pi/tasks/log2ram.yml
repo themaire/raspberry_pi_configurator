@@ -58,7 +58,7 @@
   ansible.builtin.copy:
     src: /tmp/log2ram-master/log2ram
     dest: /usr/local/bin/log2ram
-    mode: '0644'
+    mode: '0755'
     remote_src: true
 
 - name: Log2ram uninstall.sh
