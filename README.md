@@ -76,65 +76,28 @@ I recommand you to declare first one admin user and no normal users.
 
 ## Role Variables
 
-```yaml
----
-# All uncommented lines are default settings
-
-locale: 'fr_FR.UTF-8'
-timezone: 'Europe/Paris'
-
-# Ex. 'node' will result in, node0, node1, node2...
-#hostname_prefix: 'rpi_'
-
-# Addiontional packages to install
-#packages:
-- git
-- tmux
-- vim
-- nmon
-- neofetch
-
-# Changes SSH port
-#ssh_port: 22
-
-# RAM size for log2ram folder in megabytes
-log2ram_size: '128'
-
-# GPU memory split in megabytes
-gpu_mem: '16' # 16, 64, 128 or 256
-
-# Disable HDMI to preserve power
-disable_hdmi: true
-
-# Disable IPv6 on specified interfaces
-disable_ipv6_interfaces:
-  - wlan0
-  - eth0
-
-# Samba configuration
-samba_packages:
-  - samba-common
-  - samba
-  - samba-client
-
-samba_services:
-  - smbd
-#  - nmbd
-
-#samba_netbios_name: monserveur
-samba_configuration_dir: /etc/samba
-samba_configuration: "{{ samba_configuration_dir }}/smb.conf"
-```
+All the role's variables are in the roles/raspberry_pi/defaults/main.yml file. A array is present to set if you need ton apply some tasks withe a simple true/false settings.
 
 ## Example Playbook
 
-```yaml
----
-- hosts: all
-  become: true
+This is the playbook who use the role. You can see the vars array of 3 tasks familly you can turn on/off.
 
-  vars_files:
-  - config.yml
+```yaml
+- name: Configure some new group of one Raspberry Pi
+
+  # Hostname or group name from the inventory file
+  hosts: new
+  
+  # hosts: new # if you want to run the playbook on all hosts in the inventory, use 'all' instead of 'new'
+  # hosts: un nom de machine ou un groupe de machines
+
+  become: true
+  gather_facts: true
+
+  vars:
+    do_mandatory: true
+    do_optional: true
+    do_experimental: false
 
   roles:
     - raspberry_pi
