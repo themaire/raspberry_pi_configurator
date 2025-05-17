@@ -21,11 +21,14 @@ After the good execution of the playbook, you will be able to connect via ssh wi
 
 ## 3 -- Set passwords in the vault file #
 
-<p>Vault's file password in stored 'group_vars/new' folder : foobar. So it takes effect only for the 'new' node group.<br/><br/>
-Vault usage :<br>
+<p>The vault's file password stored in the 'group_vars/new' folder is : foobar. So the values are only takes effect for the 'new' inventory node group.
+
+Vault usage :
   
 ```{r, engine='bash', count_lines}
+# Change password
 ansible-vault rekey ./group_vars/new/vault.yml
+3 Edit the vault file
 ansible-vault edit ./group_vars/new/vault.yml
 ```
 
