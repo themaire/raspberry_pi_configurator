@@ -20,12 +20,22 @@ After running the playbook, you will be able to connect via SSH without a passwo
 
 ### 3 — Set Passwords in the Vault File
 
+<<<<<<< HEAD
 The vault file is stored in the `group_vars/new` folder (`vault.yml`). It only affects the `new` node group.
 
 Vault usage:
 
 ```bash
+=======
+<p>The vault's file password stored in the 'group_vars/new' folder is : foobar. So the values are only takes effect for the 'new' inventory node group.
+
+Vault usage :
+  
+```{r, engine='bash', count_lines}
+# Change password
+>>>>>>> 34c4e1442e478557dff0e02537eb54f437c83111
 ansible-vault rekey ./group_vars/new/vault.yml
+3 Edit the vault file
 ansible-vault edit ./group_vars/new/vault.yml
 ```
 
@@ -95,6 +105,7 @@ raspbian_configurator/
 
 ## Role Variables
 
+<<<<<<< HEAD
 ```yaml
 # All uncommented lines are default settings
 
@@ -143,17 +154,41 @@ samba_services:
 samba_configuration_dir: /etc/samba
 samba_configuration: "{{ samba_configuration_dir }}/smb.conf"
 ```
+=======
+All the role's variables are in the roles/raspberry_pi/defaults/main.yml file. A array is present to set if you need ton apply some tasks withe a simple true/false settings.
+>>>>>>> 34c4e1442e478557dff0e02537eb54f437c83111
 
 ---
 
 ## Example Playbook
 
+<<<<<<< HEAD
 ```yaml
 - hosts: all
   become: true
 
   vars_files:
     - config.yml
+=======
+This is the playbook who use the role. You can see the vars array of 3 tasks familly you can turn on/off.
+
+```yaml
+- name: Configure some new group of one Raspberry Pi
+
+  # Hostname or group name from the inventory file
+  hosts: new
+  
+  # hosts: new # if you want to run the playbook on all hosts in the inventory, use 'all' instead of 'new'
+  # hosts: un nom de machine ou un groupe de machines
+
+  become: true
+  gather_facts: true
+
+  vars:
+    do_mandatory: true
+    do_optional: true
+    do_experimental: false
+>>>>>>> 34c4e1442e478557dff0e02537eb54f437c83111
 
   roles:
     - raspberry_pi
