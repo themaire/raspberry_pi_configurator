@@ -37,8 +37,11 @@
   become: true
   when: setup_locale_result.changed
 
-
-- name: Setup the keyboard layout to French
-  ansible.builtin.command: "loadkeys {{ raspberry_pi_keyboard }}"
+- name: Set persistent keyboard layout
+  ansible.builtin.lineinfile:
+    path: /etc/default/keyboard
+    regexp: '^XKBLAYOUT='
+    line: "XKBLAYOUT={{ raspberry_pi_keyboard }}"
+    create: yes
   become: true
   when: setup_locale_result.changed

@@ -1,6 +1,9 @@
 
 # Raspberry Pi Ansible Role
 
+### Installing Ansible tutorial (franch)
+[Installing Ansible tutorial (French)](https://blog.stephane-robert.info/docs/infra-as-code/gestion-de-configuration/ansible/)
+
 ## Steps for a Successful Setup
 
 ### 1 — Flash the SD Card with Raspberry Pi Imager
@@ -20,20 +23,11 @@ After running the playbook, you will be able to connect via SSH without a passwo
 
 ### 3 — Set Passwords in the Vault File
 
-<<<<<<< HEAD
 The vault file is stored in the `group_vars/new` folder (`vault.yml`). It only affects the `new` node group.
 
 Vault usage:
 
 ```bash
-=======
-<p>The vault's file password stored in the 'group_vars/new' folder is : foobar. So the values are only takes effect for the 'new' inventory node group.
-
-Vault usage :
-  
-```{r, engine='bash', count_lines}
-# Change password
->>>>>>> 34c4e1442e478557dff0e02537eb54f437c83111
 ansible-vault rekey ./group_vars/new/vault.yml
 3 Edit the vault file
 ansible-vault edit ./group_vars/new/vault.yml
@@ -105,7 +99,6 @@ raspbian_configurator/
 
 ## Role Variables
 
-<<<<<<< HEAD
 ```yaml
 # All uncommented lines are default settings
 
@@ -154,9 +147,6 @@ samba_services:
 samba_configuration_dir: /etc/samba
 samba_configuration: "{{ samba_configuration_dir }}/smb.conf"
 ```
-=======
-All the role's variables are in the roles/raspberry_pi/defaults/main.yml file. A array is present to set if you need ton apply some tasks withe a simple true/false settings.
->>>>>>> 34c4e1442e478557dff0e02537eb54f437c83111
 
 ---
 
