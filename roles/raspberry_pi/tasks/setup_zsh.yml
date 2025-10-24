@@ -23,12 +23,24 @@
   loop_control:
     loop_var: zsh_user
 
-- name: Install Oh My Zsh for each user
+- name: Installer Oh My Zsh pour chaque utilisateur (mode non interactif, HOME forcé)
   ansible.builtin.command:
-    cmd: "sh /home/{{ zsh_user.name }}/install-oh-my-zsh.sh"
+    cmd: "sh /home/{{ zsh_user.name }}/install-oh-my-zsh.sh --unattended"
     creates: "/home/{{ zsh_user.name }}/.oh-my-zsh"
   become: true
-  become_user: "{{ zsh_user.name }}"
+  environment:
+    HOME: "/home/{{ zsh_user.name }}"
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: zsh_user
+
+- name: Corriger les droits sur .oh-my-zsh
+  ansible.builtin.file:
+    path: "/home/{{ zsh_user.name }}/.oh-my-zsh"
+    owner: "{{ zsh_user.name }}"
+    group: "{{ zsh_user.name }}"
+    recurse: true
+  become: true
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: zsh_user
@@ -134,6 +146,7 @@
 #     chdir: "/home/{{ zsh_user.name }}"
 #   become: true
 #   become_user: "{{ zsh_user.name }}"
+#   become_flags: "-H"
 #   loop: "{{ users_admin }}"
 #   loop_control:
 #     loop_var: zsh_user

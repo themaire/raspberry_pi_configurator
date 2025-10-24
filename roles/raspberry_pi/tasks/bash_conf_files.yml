@@ -1,15 +1,28 @@
 ---
+
+- name: "Copy original bash configuration files to users' home directories"
+  ansible.builtin.copy:
+    src: files/bash_aliases
+    dest: "/home/{{ bash_user.name }}/.bash_aliases"
+    mode: '0644'
+  loop: "{{ users_admin }}"
+  loop_control:
+    loop_var: bash_user
+  when: raspberry_pi_source_bash_aliases.stat.checksum is defined and raspberry_pi_source_bash_aliases.stat.checksum != dest_bash_aliases_checksums[bash_user.name]
+  become: true
+  no_log: true
+
 - name: "Get checksum of source .bash_aliases"
   ansible.builtin.stat:
     path: files/bash_aliases
     checksum_algorithm: sha1
-  register: source_bash_aliases
+  register: raspberry_pi_source_bash_aliases
 
 - name: "Get checksum of destination .bash_aliases"
   ansible.builtin.stat:
     path: "/home/{{ bash_user.name }}/.bash_aliases"
     checksum_algorithm: sha1
-  register: dest_bash_aliases
+  register: raspberry_pi_dest_bash_aliases
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: bash_user
@@ -18,7 +31,7 @@
 
 - name: "Set fact for destination .bash_aliases checksums"
   ansible.builtin.set_fact:
-    dest_bash_aliases_checksums: "{{ dest_bash_aliases_checksums | default({}) | combine({bash_user.name: (dest_bash_aliases.stat.checksum | default(''))}) }}"
+    dest_bash_aliases_checksums: "{{ raspberry_pi_dest_bash_aliases_checksums | default({}) | combine({bash_user.name: (dest_bash_aliases.stat.checksum | default(''))}) }}"
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: bash_user
@@ -33,7 +46,7 @@
   loop: "{{ users_admin }}"
   loop_control:
     loop_var: bash_user
-  when: source_bash_aliases.stat.checksum is defined and source_bash_aliases.stat.checksum != dest_bash_aliases_checksums[bash_user.name]
+  when: raspberry_pi_source_bash_aliases.stat.checksum is defined and raspberry_pi_source_bash_aliases.stat.checksum != dest_bash_aliases_checksums[bash_user.name]
   become: true
   no_log: true
 
@@ -41,7 +54,7 @@
   ansible.builtin.stat:
     path: files/bashrc
     checksum_algorithm: sha1
-  register: source_bashrc
+  register: raspberry_pi_source_bashrc
 
 - name: "Get checksum of destination .bashrc"
   ansible.builtin.stat:

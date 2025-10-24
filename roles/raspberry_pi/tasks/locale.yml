@@ -29,3 +29,16 @@
     state: present
   become: true
   when: locale_copy_result.changed
+
+- name: Install French keyboard keymap
+  ansible.builtin.apt:
+    name: console-data
+    state: present
+  become: true
+  when: setup_locale_result.changed
+
+
+- name: Setup the keyboard layout to French
+  ansible.builtin.command: "loadkeys {{ raspberry_pi_keyboard }}"
+  become: true
+  when: setup_locale_result.changed

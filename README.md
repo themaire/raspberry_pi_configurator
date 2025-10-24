@@ -1,95 +1,116 @@
-# raspberry pi ansible role
 
-# STEPS for good results #
+# Raspberry Pi Ansible Role
 
-## 1 -- Flashing SD card with Raspberry Pi Imager #
+## Steps for a Successful Setup
 
-<p>Before flashing, please set a custom pi's password, configure wifi (if needed) and activate ssh.<br/>
-<br/>
-Easy!
+### 1 — Flash the SD Card with Raspberry Pi Imager
 
-## 2 -- Create a ssh key #
+Before flashing, set a custom password for the Pi, configure Wi-Fi (if needed), and enable SSH.
 
-<p>On the computer you will use Ansible, create a ssh key for your futur Raspberry's user (nico for me, change it as you like).
+### 2 — Create an SSH Key
 
-To generate it : ssh-keygen -f ~/.ssh/nico.key
+On the computer where you will use Ansible, create an SSH key for your future Raspberry Pi user (e.g. `nico`, change as needed):
 
-!!! >>> Dont forget to replace the file ./roles/raspberry_pi/files/nico.key.pub by <b>"your futur username".key.pub</b> like nico.key.pub.
+```bash
+ssh-keygen -f ~/.ssh/nico.key
+```
 
-After the good execution of the playbook, you will be able to connect via ssh without password.
-</p>
+**Important:** Replace the file `./roles/raspberry_pi/files/nico.key.pub` with your own public key, named after your future username (e.g. `nico.key.pub`).
+After running the playbook, you will be able to connect via SSH without a password.
 
-## 3 -- Set passwords in the vault file #
+### 3 — Set Passwords in the Vault File
 
-<p>Vault's file password in stored 'group_vars/new' folder : foobar. So it takes effect only for the 'new' node group.<br/><br/>
-Vault usage :<br>
-  
-```{r, engine='bash', count_lines}
+The vault file is stored in the `group_vars/new` folder (`vault.yml`). It only affects the `new` node group.
+
+Vault usage:
+
+```bash
 ansible-vault rekey ./group_vars/new/vault.yml
 ansible-vault edit ./group_vars/new/vault.yml
 ```
 
-</p>
-<p>
-I recommand you to declare first one admin user and no normal users.
-</p>
+It is recommended to declare one admin user first, and no regular users.
 
-## 4 -- Adapt the iventory file #
+### 4 — Adapt the Inventory File
 
-<p>Edit the list_piansible.yml inventory file. A couple of boards are presents in the exemple.
-</p>
+Edit the `inventory.yml` file. Several boards are present as examples.
 
-## 5 -- Run the playbook #
+### 5 — Run the Playbook
 
-<p>1 : Connect to your fresh new Raspberry Pi OS via ssh and disconnect it imediatly.</p>
-<p>2 : See (best option) or run the file demo_role_raspberrypi.sh</p>
-<p>3 : Enjoy.</p>
+1. Connect to your fresh Raspberry Pi OS via SSH and disconnect immediately.
+2. (Best option) View or run the file `demo_role_raspberrypi.sh`.
+3. Enjoy!
 
-### Supports #
+---
 
-- Update and Upgrade each node.
-- Install specified packages (and Log2Ram).
-- Create admin group and user listed in users_admin variable list.
-- Change hostnames specified by prefix and index from inventory file.
-- Change GPU memory split.
-- Change timezone.
-- Change locale.
-- Install specified packages.
-- Disable HDMI to preserve power.
-- Disable IPv6 of specified interfaces.
+## Project Structure
 
-- ##Change SSH Port.
-- ##Disallow SSH root login and empty passwords.
-- ##Disallow SSH password authentication, if SSH key is provided.
-- ##Allows SSH password authentication, within ip range, if specified.
+```
+raspbian_configurator/
+├── inventory.yml
+├── play_configrasp.yml
+├── roles/
+│   └── raspberry_pi/
+│       ├── defaults/
+│       │   └── main.yml
+│       ├── files/
+│       ├── handlers/
+│       ├── meta/
+│       ├── tasks/
+│       ├── templates/
+│       └── tests/
+├── group_vars/
+│   └── new/
+│       ├── new.yml
+│       └── vault.yml
+└── README.md
+```
 
-### By default #
+---
+
+## Features
 
 - Updates and upgrades each node.
-- Installs log2ram, with 40mb RAM size for log folder.
-- Sets gpu_mem to 16mb.
+- Installs specified packages (and Log2Ram).
+- Creates admin group and users listed in `users_admin`.
+- Changes hostnames using prefix and index from inventory.
+- Sets GPU memory split.
+- Changes timezone and locale.
+- Disables HDMI to save power.
+- Disables IPv6 on specified interfaces.
+- Changes SSH port.
+- Disallows SSH root login and empty passwords.
+- Disallows SSH password authentication if an SSH key is provided.
+- Allows SSH password authentication within an IP range, if specified.
+
+### Defaults
+
+- Updates and upgrades each node.
+- Installs Log2Ram with 128MB RAM size for the log folder.
+- Sets GPU memory to 16MB.
 - Disables HDMI.
-- Disables IPv6 on wlan0 and eth0
+- Disables IPv6 on `wlan0` and `eth0`.
+
+---
 
 ## Role Variables
 
 ```yaml
----
 # All uncommented lines are default settings
 
 locale: 'fr_FR.UTF-8'
 timezone: 'Europe/Paris'
 
-# Ex. 'node' will result in, node0, node1, node2...
+# Example: 'node' will result in node0, node1, node2...
 #hostname_prefix: 'rpi_'
 
-# Addiontional packages to install
-#packages:
-- git
-- tmux
-- vim
-- nmon
-- neofetch
+# Additional packages to install
+packages:
+  - git
+  - tmux
+  - vim
+  - nmon
+  - neofetch
 
 # Changes SSH port
 #ssh_port: 22
@@ -100,7 +121,7 @@ log2ram_size: '128'
 # GPU memory split in megabytes
 gpu_mem: '16' # 16, 64, 128 or 256
 
-# Disable HDMI to preserve power
+# Disable HDMI to save power
 disable_hdmi: true
 
 # Disable IPv6 on specified interfaces
@@ -116,29 +137,32 @@ samba_packages:
 
 samba_services:
   - smbd
-#  - nmbd
+  # - nmbd
 
 #samba_netbios_name: monserveur
 samba_configuration_dir: /etc/samba
 samba_configuration: "{{ samba_configuration_dir }}/smb.conf"
 ```
 
+---
+
 ## Example Playbook
 
 ```yaml
----
 - hosts: all
   become: true
 
   vars_files:
-  - config.yml
+    - config.yml
 
   roles:
     - raspberry_pi
 ```
 
+---
+
 ## Credits
 
-Inspired from :
+Inspired by:
 <https://galaxy.ansible.com/zjael/raspberry_pi>
 ( <https://github.com/zjael/raspberry_pi> )

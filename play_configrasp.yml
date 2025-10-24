@@ -2,7 +2,7 @@
 
   # Hostname or group name from the inventory file
   hosts: new
-  
+
   # hosts: new # if you want to run the playbook on all hosts in the inventory, use 'all' instead of 'new'
   # hosts: un nom de machine ou un groupe de machines
 
@@ -10,9 +10,17 @@
   gather_facts: true
 
   vars:
+    # Do the basics tasks (like adding user, setting hostname, locale, timezone, etc.)
     do_mandatory: true
+
+    # Do the optional tasks (like installing Docker, SABnzbd, WordPress, DAC setup, etc.)
     do_optional: true
+
+    # Do the experimental tasks (currently none)
     do_experimental: false
+
+    # Define if an external drive is used for this host
+    external_drive: false
 
   roles:
     - raspberry_pi

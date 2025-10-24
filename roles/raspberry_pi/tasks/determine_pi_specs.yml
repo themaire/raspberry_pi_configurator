@@ -3,7 +3,7 @@
 - name: "Display gathered facts"
   ansible.builtin.debug:
     var: ansible_facts
-  when: ansible_facts
+  when: ansible_facts is defined
 
 - name: "Load Raspberry Pi specifications"
   ansible.builtin.include_vars:
@@ -25,6 +25,7 @@
       - "Modele du fichier /proc/device-tree/model : '{{ pi_model_output.stdout }}'"
       - "Modele du fichier remixé sans le rev : '{{ pi_model }}'"
 
+# pi_specs will contain the specifications of the detected Raspberry Pi model
 - name: "Determine Raspberry Pi specs"
   ansible.builtin.set_fact:
     pi_specs: "{{ raspberry_pi_spec }}"
@@ -33,6 +34,7 @@
     loop_var: raspberry_pi_spec
   when: pi_model in raspberry_pi_spec.modele
 
-- name: "Debug Raspberry Pi specs"
+# show the determined pi_specs
+- name: "Raspberry Pi's informations found (pi_specs variable)"
   ansible.builtin.debug:
     var: pi_specs

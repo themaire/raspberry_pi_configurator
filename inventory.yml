@@ -3,6 +3,10 @@ all:
     new:
       hosts:
       
+        raspai:
+          ansible_host: 192.168.2.14
+          ansible_user: pi
+
         #piserve:
           # ansible_host: piserve.local
           # ansible_host: fe80::bdae:5ca9:9f04:5e7%bridge100
@@ -10,15 +14,14 @@ all:
           # ansible_host: piservw
           # ansible_user: nico
         
-        pi1:
-          # ansible_host: 192.168.2.2 # Ip address of the Pi or hostname
-          ansible_host: "pi1.local"
-          force_hostname: "pi1"
-          ansible_user: pi
-          raspberry_pi_gpu_mem: '16'
-          ansible_python_interpreter: /usr/bin/python3
-          headless: true
-
+        # pi1:
+        #   # ansible_host: 192.168.2.2 # Ip address of the Pi or hostname
+        #   ansible_host: "pi1.local"
+        #   force_hostname: "pi1"
+        #   ansible_user: pi
+        #   raspberry_pi_gpu_mem: '16'
+        #   ansible_python_interpreter: /usr/bin/python3
+        #   headless: true
 
     raspberrypi:
       hosts:

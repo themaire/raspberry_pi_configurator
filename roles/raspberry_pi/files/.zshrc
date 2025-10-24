@@ -105,3 +105,7 @@ export LANG=fr_FR.UTF-8
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias maj="sudo apt update && sudo apt upgrade"
+alias si="sudo -i"
+
+neofetch
