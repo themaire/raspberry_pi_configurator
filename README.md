@@ -186,8 +186,8 @@ This is the playbook who use the role. You can see the vars array of 3 tasks fam
 
 ---
 
-## Credits
 
-Inspired by:
-<https://galaxy.ansible.com/zjael/raspberry_pi>
-( <https://github.com/zjael/raspberry_pi> )
+## Credits & Acknowledgements
+
+This role is inspired by and based on the excellent work of [zjael/raspberry_pi](https://galaxy.ansible.com/zjael/raspberry_pi) ([GitHub repo](https://github.com/zjael/raspberry_pi)).
+Many ideas, structure and best practices come from this original project—thanks to the author for sharing his work with the community!
