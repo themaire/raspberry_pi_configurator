@@ -4,7 +4,24 @@
 ### Installing Ansible tutorial (franch)
 [Installing Ansible tutorial (French)](https://blog.stephane-robert.info/docs/infra-as-code/gestion-de-configuration/ansible/)
 
-## Steps for a Successful Setup
+
+## Installing the Raspberry Pi Role
+
+You can install the role in your project in two ways:
+
+**1. With ansible-galaxy:**
+
+```bash
+ansible-galaxy install -p roles themaire.raspberry_pi_configurator
+```
+
+**2. With git clone:**
+
+```bash
+git clone https://github.com/themaire/ansible-role-raspberry_pi_configurator.git roles/raspberry_pi_configurator
+```
+
+Both methods will make the role available as `raspberry_pi_configurator` in your playbooks.
 
 ### 1 — Flash the SD Card with Raspberry Pi Imager
 
@@ -54,7 +71,7 @@ raspbian_configurator/
 ├── inventory.yml
 ├── play_configrasp.yml
 ├── roles/
-│   └── raspberry_pi/
+│   └── raspberry_pi_configurator/
 │       ├── defaults/
 │       │   └── main.yml
 │       ├── files/
@@ -152,14 +169,6 @@ samba_configuration: "{{ samba_configuration_dir }}/smb.conf"
 
 ## Example Playbook
 
-<<<<<<< HEAD
-```yaml
-- hosts: all
-  become: true
-
-  vars_files:
-    - config.yml
-=======
 This is the playbook who use the role. You can see the vars array of 3 tasks familly you can turn on/off.
 
 ```yaml
@@ -178,7 +187,6 @@ This is the playbook who use the role. You can see the vars array of 3 tasks fam
     do_mandatory: true
     do_optional: true
     do_experimental: false
->>>>>>> 34c4e1442e478557dff0e02537eb54f437c83111
 
   roles:
     - raspberry_pi

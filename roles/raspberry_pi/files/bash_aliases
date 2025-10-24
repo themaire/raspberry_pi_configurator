@@ -1,2 +1,0 @@
-alias maj="sudo apt update && sudo apt upgrade"
-alias si="sudo -i"

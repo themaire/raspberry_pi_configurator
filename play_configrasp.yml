@@ -23,4 +23,4 @@
     external_drive: false
 
   roles:
-    - raspberry_pi
+    - raspberry_pi_configurator
